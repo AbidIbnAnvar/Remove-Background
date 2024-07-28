@@ -1,6 +1,6 @@
 import './App.css';
-import React,{ useState, useRef} from 'react';
-import { FilePond, registerPlugin, File } from 'react-filepond';
+import React,{ useState } from 'react';
+import { FilePond, registerPlugin} from 'react-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
 import FilePondPluginFileMetadata from 'filepond-plugin-file-metadata';
@@ -10,7 +10,7 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import 'filepond/dist/filepond.min.css';
 import axios from 'axios';
-
+ 
 registerPlugin(FilePondPluginImagePreview,
   FilePondPluginFileEncode,
   FilePondPluginFileMetadata,
@@ -23,15 +23,12 @@ registerPlugin(FilePondPluginImagePreview,
 
 
 function App() {
-  const [file, setFile] = useState([]);
-  const [message, setMessage] = useState("");
+  // const [file, setFile] = useState([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(false);
   const [error, setError] = useState(null);
   const [imageURL, setImageURL] = useState(null);
 
-
-  const pond = useRef(null);
 
   const handleFileUpload = async (file) => {
     console.log('Hello');
@@ -91,12 +88,12 @@ function App() {
             />
             {loading && <p className="py-10 text-white">Generating...</p>}
             {!loading && error && <p className="py-10 text-white">{error}</p>}
-            {result && file &&
+            {result &&
               <div className='my-4'>
                 <p className='text-white font-semibold text-xl'>Click on the image to download</p>
                 <div className='bg-[#021550] rounded-3xl'>
                   <a href='http://localhost:5000/download' className='text-white px-16 py-4 rounded-lg'>
-                    <img src={imageURL} alt="Generated Image" className='min-w-24 max-w-64 mx-auto'/>
+                    <img src={imageURL} alt="" className='min-w-24 max-w-64 mx-auto'/>
                   </a>
                 </div>
               </div>
