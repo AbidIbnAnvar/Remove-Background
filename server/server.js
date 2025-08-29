@@ -14,24 +14,22 @@ let lastProcessedFilePath = null;
 
 const app = express();
 const upload = multer({ dest: 'uploads/', limits: { fileSize: 22 * 1024 * 1024 } });
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-async function removeBg(fileBuffer) {
+const removeBg = async (fileBuffer) => {
   const formData = new FormData();
-  formData.append("size", "auto");
-  formData.append("image_file", fileBuffer, "image.png");
+  formData.append('file', fileBuffer, 'image.png');  // key 'file' matches Flask route expectation
 
-  const response = await axios.post("https://api.remove.bg/v1.0/removebg", formData, {
+  const response = await axios.post('http://localhost:3030/remove-bg', formData, {
     headers: {
-      "X-Api-Key": apiKey,
-      ...formData.getHeaders()
+      ...formData.getHeaders(),
     },
-    responseType: 'arraybuffer'
+    responseType: 'arraybuffer',  // important to get image binary back
   });
 
   if (response.status === 200) {
@@ -39,26 +37,35 @@ async function removeBg(fileBuffer) {
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);
   }
-}
+};
 
 app.post('/api/remove-bg', upload.single('file'), async (req, res) => {
   let filePath;
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
+      return res.status(400).json({ error: 'No file uploaded' });
     }
     filePath = req.file.path;
     const originalName = req.file.originalname;
     const ext = path.extname(originalName) || '.png';
+
+    // Rename to keep extension
     fs.renameSync(filePath, filePath + ext);
     filePath += ext;
 
+    // Read file as buffer
     const fileBuffer = fs.readFileSync(filePath);
 
+    // Send to local python API to remove background
     const rbgResultData = await removeBg(fileBuffer);
+
+    // Save result image locally
     const resultFilePath = path.join(__dirname, path.parse(originalName).name + '-bg-remove.png');
     fs.writeFileSync(resultFilePath, Buffer.from(rbgResultData));
+
     lastProcessedFilePath = resultFilePath;
+
+    // Send processed image back to client
     res.sendFile(resultFilePath);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -69,6 +76,7 @@ app.post('/api/remove-bg', upload.single('file'), async (req, res) => {
   }
 });
 
+
 app.get('/download', (req, res) => {
   if (!lastProcessedFilePath) {
     return res.status(400).json({ error: "No file to download" });
@@ -77,7 +85,7 @@ app.get('/download', (req, res) => {
     if (err) {
       res.status(500).json({ error: err.message });
     } else {
-      console.log(`File ${filePath} downloaded successfully.`);
+      console.log(`File downloaded successfully.`);
     }
   });
 });

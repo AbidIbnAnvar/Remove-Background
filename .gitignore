@@ -5,6 +5,15 @@
 /.pnp
 .pnp.js
 /server/node_modules/
+/server/model/MODNet/
+/server/model/venv/
+
+.github/
+
+Dockerfile
+.dockerignore
+fly.toml
+*.conf
 
 .env
 

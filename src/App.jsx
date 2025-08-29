@@ -1,6 +1,6 @@
 import './App.css';
-import React,{ useState } from 'react';
-import { FilePond, registerPlugin} from 'react-filepond';
+import React, { useState } from 'react';
+import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import FilePondPluginFileEncode from 'filepond-plugin-file-encode';
 import FilePondPluginFileMetadata from 'filepond-plugin-file-metadata';
@@ -10,7 +10,7 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css';
 import 'filepond/dist/filepond.min.css';
 import axios from 'axios';
- 
+
 registerPlugin(FilePondPluginImagePreview,
   FilePondPluginFileEncode,
   FilePondPluginFileMetadata,
@@ -42,10 +42,10 @@ function App() {
 
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:5000/api/remove-bg', formData, {
+      const response = await axios.post('http://localhost:8080/api/remove-bg', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-        }, 
+        },
         responseType: 'blob',
       });
 
@@ -65,9 +65,9 @@ function App() {
     }
   };
 
-  
+
   return (
-  
+
     <div className='min-h-screen bg-[#020727] bg-fixed poppins-regular'>
       <div className="grid grid-rows-1 grid-cols-1 gap-2">
         <h1 className='text-white font-bold mx-auto mt-20 text-center text-5xl'>Image
@@ -92,15 +92,15 @@ function App() {
               <div className='my-4'>
                 <p className='text-white font-semibold text-xl'>Click on the image to download</p>
                 <div className='bg-[#021550] rounded-3xl'>
-                  <a href='http://localhost:5000/download' className='text-white px-16 py-4 rounded-lg'>
-                    <img src={imageURL} alt="" className='min-w-24 max-w-64 mx-auto'/>
+                  <a href='http://localhost:8080/download' className='text-white px-16 py-4 rounded-lg'>
+                    <img src={imageURL} alt="" className='min-w-24 max-w-64 mx-auto' />
                   </a>
                 </div>
               </div>
             }
           </div>
         </div>
-      </div> 
+      </div>
       <div className='mt-20 pb-10' >
         <h1 className='text-white text-center font-bold text-4xl'>How to use</h1>
         <div className='flex flex-row flex-wrap w-auto justify-evenly gap-8 mx-8 my-16'>
@@ -120,10 +120,10 @@ function App() {
             <div>After the background is removed, click on the processed image displayed on the screen to download it with the background removed.</div>
           </div>
         </div>
-        </div>
+      </div>
     </div>
 
-    
+
   );
 }
 
